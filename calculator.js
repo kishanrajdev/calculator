@@ -9,12 +9,10 @@ function calculate(expr) {
 
   for (let i = 0; i < expr.length; i++) {
     let currChar = expr.charAt(i);
-    
-    if (!isNaN(parseFloat(expr.slice(startIdx, i + 1))) || currChar === '.') {
+    if ((!isNaN(currChar) && !isNaN(parseFloat(expr.slice(startIdx, i + 1)))) || currChar === '.') {
       num = parseFloat(expr.slice(startIdx, i + 1));
     } else if (currChar === '(') {
-      
-      if (startIdx > 0 && expr[startIdx - 1] === ')') throw new Error('Invalid expression'); // Invalid expression if brackets come after numbers directly with no sign
+      if (i > 0 && !isSign(expr[i - 1])) throw new Error('Invalid expression'); // Invalid expression if brackets come after numbers directly with no sign
 
       let brackets = 1;
       let j;
@@ -29,7 +27,7 @@ function calculate(expr) {
       startIdx = i + 1;
     }
 
-    if (currChar == '+' || currChar == '-' || currChar == '*' || currChar == '/' || i === expr.length - 1) {
+    if (currChar === '+' || currChar === '-' || currChar === '*' || currChar === '/' || i === expr.length - 1) {
       switch (sign) {
         case '+':
           stack.push(num);
@@ -55,6 +53,9 @@ function calculate(expr) {
   return result;
 }
 
+function isSign(char) {
+  return (char === '+' || char === '-' || char === '*' || char === '/' || char === '(');
+}
 
 function validateBrackets(expr) {
   let brackets = 0;
@@ -69,6 +70,7 @@ function validateBrackets(expr) {
 
 function calculator(expr) {
   if (!validateBrackets(expr)) throw new Error('Invalid expression');
+  expr = expr.replace(/\s/g, ""); // remove all white spaces;
   return calculate(expr);
 }
 
